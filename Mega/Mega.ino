@@ -81,11 +81,11 @@ Servo servo1;
 
 //Functions 
 void garden(String cmd);
-//void getStatus();
+
 long microToCms(long microseconds) {
   return microseconds / 29 / 2;
 }
-void moistureSample();
+
 
 void setup() {
   Serial.begin(9600);
@@ -269,7 +269,7 @@ void roomKitchen(String cmd) {
        if(cmd == "KS") {
           long d1,d2,d3,cm1,cm2,cm3;
           int len = 100; //Length of Box. Assumed value for now. Update after boxes are obtained
-          int p1,p2,p3; //To calculate percentage of grocery
+          int p1,p2; //To calculate percentage of grocery
   
           digitalWrite(tp1, LOW); //low pulse first to ensure a clean high pulse.
           delayMicroseconds(2); 
@@ -308,73 +308,49 @@ void roomKitchen(String cmd) {
           p2=(cm2/len)*100;
           //delay(100);
           
-          digitalWrite(tp3, LOW); //low pulse first to ensure a clean high pulse.
-          delayMicroseconds(2); 
-          digitalWrite(tp3, HIGH);
-          delayMicroseconds(10);
-          digitalWrite(tp3, LOW);
-          delayMicroseconds(10);
-
-    // Read the signal from the sensor: a HIGH pulse whose
-    // duration is the time (in microseconds) from the sending
-    // of the ping to the reception of its echo off of an object.
-  
-          d3 = pulseIn(ep3, HIGH);
-    // convert the time into a distance
-          cm3 = microToCms(d3);
-          //calculate percentage
-          p3=(cm3/len)*100;
            // Send the recorded information
           if(p1 < 10) {
             Serial.print("C10");
             Serial.print(p1);
+            Serial.print(":");
             Serial.flush();
             Serial1.print("C10");
             Serial1.print(p1);
+            Serial1.print(":");
             Serial1.flush();
           }
           else {
             Serial.print("C1");
-            Serial.println(p1);
+            Serial.print(p1);
+            Serial.print(":");
             Serial.flush();
             Serial1.print("C1");
-            Serial1.println(p1);
+            Serial1.print(p1);
+            Serial1.print(":");
             Serial1.flush();
           }
           
           if(p2 < 10) {
             Serial.print("C20");
             Serial.print(p2);
+            Serial1.println(":");
             Serial.flush();
             Serial1.print("C20");
-            Serial1.println(p2);
+            Serial1.print(p2);
+            Serial1.println(":");
             Serial1.flush();
           }
           else {
             Serial.print("C2");
-            Serial.println(p2);
+            Serial.print(p2);
+            Serial1.println(":");
             Serial.flush();
             Serial1.print("C2");
-            Serial1.println(p2);
+            Serial1.print(p2);
+            Serial1.println(":");
             Serial1.flush(); 
           }
           
-          if(p3 < 10) {
-            Serial.print("C30");
-            Serial.print(p3);
-            Serial.flush();
-            Serial1.print("C30");
-            Serial1.print(p3);
-            Serial1.flush();
-          }
-          else {
-            Serial.print("C3");
-            Serial.println(p3);
-            Serial.flush();
-            Serial1.print("C3");
-            Serial1.println(p3);
-            Serial1.flush();
-          }    
 }
 }
 
@@ -406,7 +382,7 @@ void garden(String cmd) {
      if(cmd.equals("GSO")) {
         moistureAvg = moistureSampler();
         moistureAvg = (moistureAvg / 1024) * 100; // Calculate the percentage, for dear Bella *_*
-        moistureAvg = moistureAvg - 100; //To reverse the value
+        moistureAvg = 100 - moistureAvg; //To reverse the value
         delay(100); //Just hold on a sec...
         if(moistureAvg >= 80) {
           Serial.println("F3:");//Soil is too wet to be watered
@@ -460,6 +436,9 @@ void initPosition() {
    servo1.write(90); // set the servo to mid-point
    delay(500);  
  }
+
+
+ 
 int moistureSampler() {
   int sum = 0;
   for(int i = 0; i < 25; i++) {
@@ -471,7 +450,10 @@ int moistureSampler() {
 
 void getStatus() {
   String sat = "";
-  //Build the sat string
+  int moist, c1, c2;
+  //Building the sat string
+
+  //Satus of the room
   if(flag1)
     sat += "T";
   else
@@ -484,11 +466,75 @@ void getStatus() {
     sat += "T";
    else
     sat += "F";
+
+  //Status of the kitchen
+  checkContents(&c1, &c2);
+  if(c1 < 30) 
+    sat += "F";
+  else
+    sat += "T";
+  if(c2 < 30)
+    sat += "F";
+  else
+    sat += "T";
+
+  //Status of the moisture in the garden
+  moist = moistureSampler();
+  moist = (moist / 1024) * 100;
+  moist = 100 - moist;
+  if(moist < 30)
+    sat += "F";
+  else
+    sat += "T";
+ 
+  //Add the delimiter
   sat += ":";
+  
   Serial1.println(sat);
   Serial1.flush();
   Serial.println(sat);
   Serial.flush();
 }
 
+
+void checkContents(int *p1, int *p2) {
+          long d1,d2,d3,cm1,cm2,cm3;
+          int len = 100; //Length of Box. Assumed value for now. Update after boxes are obtained
+      
+          digitalWrite(tp1, LOW); //low pulse first to ensure a clean high pulse.
+          delayMicroseconds(2); 
+          digitalWrite(tp1, HIGH);
+          delayMicroseconds(10);
+          digitalWrite(tp1, LOW);
+          delayMicroseconds(10);
+
+         // Read the signal from the sensor: a HIGH pulse whose
+        // duration is the time (in microseconds) from the sending
+        // of the ping to the reception of its echo off of an object.
+  
+          d1 = pulseIn(ep1, HIGH);
+          // convert the time into a distance
+          cm1 = microToCms(d1);
+          //calculate percentage
+          *p1=(cm1/len)*100;
+          //delay(100);
+
+          digitalWrite(tp2, LOW); //low pulse first to ensure a clean high pulse.
+          delayMicroseconds(2); 
+          digitalWrite(tp2, HIGH);
+          delayMicroseconds(10);
+          digitalWrite(tp2, LOW);
+          delayMicroseconds(10);
+
+    // Read the signal from the sensor: a HIGH pulse whose
+    // duration is the time (in microseconds) from the sending
+    // of the ping to the reception of its echo off of an object.
+  
+          d2 = pulseIn(ep2, HIGH);
+
+    // convert the time into a distance
+          cm2 = microToCms(d2);
+          //calculate percentage
+          *p2=(cm2/len)*100;  
+}
 
