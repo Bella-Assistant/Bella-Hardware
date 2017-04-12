@@ -324,13 +324,15 @@ void roomKitchen(String cmd) {
             Serial.print(p1);
             if(p1 < 50)
               Serial.print("F:");
-            Serial.print("T:");
+            else
+              Serial.print("T:");
             Serial.flush();
             Serial1.print("C1");
             Serial1.print(p1);
             if(p1 < 50)
               Serial1.print("F:");
-            Serial1.print("T:");
+            else
+              Serial1.print("T:");
             Serial1.flush();
           }
           
@@ -349,13 +351,15 @@ void roomKitchen(String cmd) {
             Serial.print(p2);
             if(p2 < 50)
               Serial.println("F:");
-            Serial.println("T:");
+            else
+              Serial.println("T:");
             Serial.flush();
             Serial1.print("C2");
             Serial1.print(p2);
             if(p2 < 50)
               Serial1.println("F:");
-            Serial1.println("T:");
+            else
+              Serial1.println("T:");
             Serial1.flush(); 
           }
           
