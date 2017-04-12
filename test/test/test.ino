@@ -371,18 +371,22 @@ void garden(String cmd) {
        // delay(100); //Just hold on a sec...
         if(moistureAvg < 10) {
           Serial1.print("M10");
-          Serial1.println(moistureAvg);
+          Serial1.print(moistureAvg);
+          Serial1.println(":");
           Serial1.flush();
           Serial.print("M10");
-          Serial.println(moistureAvg);
+          Serial.print(moistureAvg);
+          Serial.println(":");
           Serial.flush();
         }
         else {
          Serial.print("M1");
-         Serial.println(moistureAvg);
+         Serial.print(moistureAvg);
+         Serial.println(":");
          Serial.flush();
          Serial1.print("M1");
-         Serial1.println(moistureAvg);
+         Serial1.print(moistureAvg);
+         Serial1.println(":");
          Serial1.flush();
          moistureAvg = 0; // Reset the value after printing 
         }
