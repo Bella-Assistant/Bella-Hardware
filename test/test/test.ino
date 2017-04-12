@@ -240,29 +240,29 @@ void roomKitchen(String cmd) {
        }
        if(cmd.equals("FT")) {
         if(flag3) {     //fan already on
-          Serial.print("S2:");
+          Serial.println("S2:");
           Serial.flush();
-          Serial1.print("S2:");
+          Serial1.println("S2:");
           Serial1.flush();
         }
         else {
-          Serial.print("S1:");
+          Serial.println("S1:");
           Serial.flush();
-          Serial1.print("S1:");
+          Serial1.println("S1:");
           Serial1.flush();
         }
        }
        if(cmd.equals("FF")) {
         if(!flag3) {    //fan already off
-          Serial.print("S4:");
+          Serial.println("S4:");
           Serial.flush();
-          Serial1.print("S4:");
+          Serial1.println("S4:");
           Serial1.flush();
         }
         else {
-          Serial.print("S3:");
+          Serial.println("S3:");
           Serial.flush();
-          Serial1.print("S3:");
+          Serial1.println("S3:");
           Serial1.flush();
         }
        }
@@ -312,27 +312,27 @@ void roomKitchen(String cmd) {
           if(p1 < 10) {
             Serial.print("C10");
             Serial.print(p1);
-            Serial.print(":");
+            Serial.print("F");
             Serial.flush();
             Serial1.print("C10");
             Serial1.print(p1);
-            Serial1.print("F:");
+            Serial1.print("F");
             Serial1.flush();
           }
           else {
             Serial.print("C1");
             Serial.print(p1);
             if(p1 < 50)
-              Serial.print("F:");
+              Serial.print("F");
             else
-              Serial.print("T:");
+              Serial.print("T");
             Serial.flush();
             Serial1.print("C1");
             Serial1.print(p1);
             if(p1 < 50)
-              Serial1.print("F:");
+              Serial1.print("F");
             else
-              Serial1.print("T:");
+              Serial1.print("T");
             Serial1.flush();
           }
           

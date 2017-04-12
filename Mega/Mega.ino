@@ -240,38 +240,38 @@ void roomKitchen(String cmd) {
        }
        if(cmd.equals("FT")) {
         if(flag3) {     //fan already on
-          Serial.print("S2:");
+          Serial.println("S2:");
           Serial.flush();
-          Serial1.print("S2:");
+          Serial1.println("S2:");
           Serial1.flush();
         }
         else {
-          Serial.print("S1:");
+          Serial.println("S1:");
           Serial.flush();
-          Serial1.print("S1:");
+          Serial1.println("S1:");
           Serial1.flush();
         }
        }
        if(cmd.equals("FF")) {
         if(!flag3) {    //fan already off
-          Serial.print("S4:");
+          Serial.println("S4:");
           Serial.flush();
-          Serial1.print("S4:");
+          Serial1.println("S4:");
           Serial1.flush();
         }
         else {
-          Serial.print("S3:");
+          Serial.println("S3:");
           Serial.flush();
-          Serial1.print("S3:");
+          Serial1.println("S3:");
           Serial1.flush();
         }
        }
        if(cmd == "KS") {
           long d1,d2,d3,cm1,cm2,cm3;
           int len = 100; //Length of Box. Assumed value for now. Update after boxes are obtained
-          int p1,p2; //To calculate percentage of grocery
+          int p1 = 35,p2 = 86; //To calculate percentage of grocery
   
-          digitalWrite(tp1, LOW); //low pulse first to ensure a clean high pulse.
+  /*        digitalWrite(tp1, LOW); //low pulse first to ensure a clean high pulse.
           delayMicroseconds(2); 
           digitalWrite(tp1, HIGH);
           delayMicroseconds(10);
@@ -307,32 +307,32 @@ void roomKitchen(String cmd) {
           //calculate percentage
           p2=(cm2/len)*100;
           //delay(100);
-          
+    */      
            // Send the recorded information
           if(p1 < 10) {
             Serial.print("C10");
             Serial.print(p1);
-            Serial.print(":");
+            Serial.print("F");
             Serial.flush();
             Serial1.print("C10");
             Serial1.print(p1);
-            Serial1.print("F:");
+            Serial1.print("F");
             Serial1.flush();
           }
           else {
             Serial.print("C1");
             Serial.print(p1);
             if(p1 < 50)
-              Serial.print("F:");
+              Serial.print("F");
             else
-              Serial.print("T:");
+              Serial.print("T");
             Serial.flush();
             Serial1.print("C1");
             Serial1.print(p1);
             if(p1 < 50)
-              Serial1.print("F:");
+              Serial1.print("F");
             else
-              Serial1.print("T:");
+              Serial1.print("T");
             Serial1.flush();
           }
           
@@ -369,10 +369,10 @@ void roomKitchen(String cmd) {
 
 void garden(String cmd) {
   if(cmd.equals("GSS")) {
-        moistureAvg = moistureSampler();
-        moistureAvg = (moistureAvg / 1024) * 100; // Calculate the percentage, for dear Bella *_*
-        moistureAvg = moistureAvg - 100; //To reverse the value
-        delay(100); //Just hold on a sec...
+        moistureAvg = 28;  //moistureSampler();
+        //moistureAvg = (moistureAvg / 1024) * 100; // Calculate the percentage, for dear Bella *_*
+        //moistureAvg = moistureAvg - 100; //To reverse the value
+       // delay(100); //Just hold on a sec...
         if(moistureAvg < 10) {
           Serial1.print("M10");
           Serial1.print(moistureAvg);
@@ -466,7 +466,7 @@ int moistureSampler() {
 
 void getStatus() {
   String sat = "";
-  int moist, c1, c2;
+  int moist = 30, c1 = 36, c2 = 86;
   //Building the sat string
 
   //Satus of the room
@@ -484,7 +484,7 @@ void getStatus() {
     sat += "F";
 
   //Status of the kitchen
-  checkContents(&c1, &c2);
+  //checkContents(&c1, &c2);
   if(c1 < 50) 
     sat += "F";
   else
@@ -495,9 +495,9 @@ void getStatus() {
     sat += "T";
 
   //Status of the moisture in the garden
-  moist = moistureSampler();
-  moist = (moist / 1024) * 100;
-  moist = 100 - moist;
+ // moist = moistureSampler();
+ // moist = (moist / 1024) * 100;
+  //moist = 100 - moist;
   if(moist < 40)
     sat += "F";
   else
