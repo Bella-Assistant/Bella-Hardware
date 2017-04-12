@@ -244,12 +244,14 @@ void roomKitchen(String cmd) {
           Serial.flush();
           Serial1.println("S2:");
           Serial1.flush();
+          flag3 = true;
         }
         else {
           Serial.println("S1:");
           Serial.flush();
           Serial1.println("S1:");
           Serial1.flush();
+          flag3 = true;
         }
        }
        if(cmd.equals("FF")) {
@@ -258,12 +260,14 @@ void roomKitchen(String cmd) {
           Serial.flush();
           Serial1.println("S4:");
           Serial1.flush();
+          flag3 = false;
         }
         else {
           Serial.println("S3:");
           Serial.flush();
           Serial1.println("S3:");
           Serial1.flush();
+          flag3 = false;
         }
        }
        if(cmd == "KS") {
