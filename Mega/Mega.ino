@@ -316,38 +316,46 @@ void roomKitchen(String cmd) {
             Serial.flush();
             Serial1.print("C10");
             Serial1.print(p1);
-            Serial1.print(":");
+            Serial1.print("F:");
             Serial1.flush();
           }
           else {
             Serial.print("C1");
             Serial.print(p1);
-            Serial.print(":");
+            if(p1 < 50)
+              Serial.print("F:");
+            Serial.print("T:")
             Serial.flush();
             Serial1.print("C1");
             Serial1.print(p1);
-            Serial1.print(":");
+            if(p1 < 50)
+              Serial1.print("F:");
+            Serial1.print("T:");
             Serial1.flush();
           }
           
           if(p2 < 10) {
             Serial.print("C20");
             Serial.print(p2);
-            Serial1.println(":");
+            Serial.println("F:");
             Serial.flush();
             Serial1.print("C20");
             Serial1.print(p2);
-            Serial1.println(":");
+            Serial1.println("F:");
             Serial1.flush();
           }
           else {
             Serial.print("C2");
             Serial.print(p2);
-            Serial1.println(":");
+            if(p2 < 50)
+              Serial.print("F:");
+            Serial.println("T:");
             Serial.flush();
             Serial1.print("C2");
             Serial1.print(p2);
-            Serial1.println(":");
+            if(p2 < 50)
+              Serial1.print("F:");
+            Serial1.println("T:");
             Serial1.flush(); 
           }
           
