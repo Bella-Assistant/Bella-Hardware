@@ -324,7 +324,7 @@ void roomKitchen(String cmd) {
             Serial.print(p1);
             if(p1 < 50)
               Serial.print("F:");
-            Serial.print("T:")
+            Serial.print("T:");
             Serial.flush();
             Serial1.print("C1");
             Serial1.print(p1);
@@ -477,11 +477,11 @@ void getStatus() {
 
   //Status of the kitchen
   checkContents(&c1, &c2);
-  if(c1 < 30) 
+  if(c1 < 50) 
     sat += "F";
   else
     sat += "T";
-  if(c2 < 30)
+  if(c2 < 50)
     sat += "F";
   else
     sat += "T";
@@ -490,7 +490,7 @@ void getStatus() {
   moist = moistureSampler();
   moist = (moist / 1024) * 100;
   moist = 100 - moist;
-  if(moist < 30)
+  if(moist < 40)
     sat += "F";
   else
     sat += "T";
