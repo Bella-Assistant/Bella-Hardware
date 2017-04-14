@@ -61,15 +61,15 @@ const int moisturePin = A0;
 int moistureValue = 0;
 
 //The average moisture value
-long int moistureAvg = 0;
+float moistureAvg = 0.0;
 
 //Pins to use the Sprinkler Motor
-const int motor1Pin1 = 14;
-const int motor1Pin2 = 15;
-const int motor1En = 16;
-const int motor2pin1 = 17;
-const int motor2pin2 = 18;
-const int motor2En = 19;
+const int motor1Pin1 = 32;
+const int motor1Pin2 = 33;
+const int motor1En = 34;
+const int motor2pin1 = 35;
+const int motor2pin2 = 36;
+const int motor2En = 37;
 
 //Pins to use Fan Motor
 
@@ -81,6 +81,7 @@ Servo servo1;
 
 //Functions 
 void garden(String cmd);
+void getStatus();
 
 long microToCms(long microseconds) {
   return microseconds / 29 / 2;
@@ -163,6 +164,13 @@ void setupFunc() {
 
   //Moisture Level Sensor
   pinMode(moisturePin, INPUT);
+
+  digitalWrite(light1,1);
+  digitalWrite(light2,1);
+  digitalWrite(light1,0);
+  digitalWrite(light2,0);
+  digitalWrite(light1,1);
+  digitalWrite(light2,1);
 }
 
 void roomKitchen(String cmd) {
@@ -175,13 +183,14 @@ void roomKitchen(String cmd) {
       Serial.flush();
      }
      else {
-      Serial1.println("T1:");
-      Serial1.flush();
       flag1 = true; // Change flag status
       //Relay Instruction
-      digitalWrite(light1,LOW);
+      digitalWrite(light1,0);
       Serial.println("T1:");          
       Serial.flush();
+      Serial1.println("T1:");
+      Serial1.flush();
+      
      }
     }
     //Turn off Room Light 1 
@@ -194,10 +203,10 @@ void roomKitchen(String cmd) {
        }
        else {
         Serial.println("T4:");
-        Serial.flush();;
+        Serial.flush();
         flag1 = false;
         //Relay Instruction
-        digitalWrite(light1,HIGH);
+        digitalWrite(light1,1);
         Serial1.println("T4:");
         Serial1.flush();
        }
@@ -217,7 +226,7 @@ void roomKitchen(String cmd) {
          Serial1.flush();
          flag2 = true;
          //Relay Instruction
-         digitalWrite(light2,LOW);          
+         digitalWrite(light2,0);          
        }
       }
       //Turn off Room Light 2 
@@ -235,7 +244,7 @@ void roomKitchen(String cmd) {
           Serial1.flush();
           flag2 = false;
           //Relay Instruction
-          digitalWrite(light2,HIGH);          
+          digitalWrite(light2,1);          
          }
        }
        // Code for controllling the fan
@@ -253,6 +262,10 @@ void roomKitchen(String cmd) {
           Serial1.println("S1:");
           Serial1.flush();
           flag3 = true;
+          digitalWrite(motor2En, HIGH);
+          digitalWrite(motor2pin1, HIGH);
+          digitalWrite(motor2pin2, LOW);
+          delay(100);
         }
        }
        if(cmd.equals("FF")) {
@@ -269,11 +282,15 @@ void roomKitchen(String cmd) {
           Serial1.println("S3:");
           Serial1.flush();
           flag3 = false;
+          digitalWrite(motor2En, LOW);
+          digitalWrite(motor2pin1, LOW);
+          digitalWrite(motor2pin2, LOW);
+          delay(100);
         }
        }
        if(cmd == "KS") {
-          long d1,d2,d3,cm1,cm2,cm3;
-          int len = 100; //Length of Box. Assumed value for now. Update after boxes are obtained
+          float d1,d2,d3,cm1,cm2,cm3;
+          float len = 16.0,a=0.0; //Length of box.
           int p1,p2; //To calculate percentage of grocery
   
           digitalWrite(tp1, LOW); //low pulse first to ensure a clean high pulse.
@@ -290,9 +307,13 @@ void roomKitchen(String cmd) {
           d1 = pulseIn(ep1, HIGH);
           // convert the time into a distance
           cm1 = microToCms(d1);
+          Serial.println(cm1);
           //calculate percentage
-          p1=(cm1/len)*100;
+          a=cm1/len;
+          p1=a*100;
+          p1 = 100 - p1;
           //delay(100);
+          //Serial.println(p1);
 
           digitalWrite(tp2, LOW); //low pulse first to ensure a clean high pulse.
           delayMicroseconds(2); 
@@ -310,34 +331,36 @@ void roomKitchen(String cmd) {
     // convert the time into a distance
           cm2 = microToCms(d2);
           //calculate percentage
-          p2=(cm2/len)*100;
+          a=cm2/len;
+          p2=a*100;
+          p2 = 100 - p2;
           //delay(100);
           
            // Send the recorded information
           if(p1 < 10) {
             Serial.print("C10");
             Serial.print(p1);
-            Serial.print(":");
+           // Serial.print(":");
             Serial.flush();
             Serial1.print("C10");
             Serial1.print(p1);
-            Serial1.print("F:");
+            Serial1.print("F");
             Serial1.flush();
           }
           else {
             Serial.print("C1");
             Serial.print(p1);
             if(p1 < 50)
-              Serial.print("F:");
+              Serial.print("F");
             else
-              Serial.print("T:");
+              Serial.print("T");
             Serial.flush();
             Serial1.print("C1");
             Serial1.print(p1);
             if(p1 < 50)
-              Serial1.print("F:");
+              Serial1.print("F");
             else
-              Serial1.print("T:");
+              Serial1.print("T");
             Serial1.flush();
           }
           
@@ -366,27 +389,36 @@ void roomKitchen(String cmd) {
             else
               Serial1.println("T:");
             Serial1.flush(); 
-          }
-          
+         }
+         // Serial.println("C185TC234F:");
 }
 }
 
 
 void garden(String cmd) {
+  float a;
   if(cmd.equals("GSS")) {
-        moistureAvg = moistureSampler();
-        moistureAvg = (moistureAvg / 1024) * 100; // Calculate the percentage, for dear Bella *_*
-        moistureAvg = moistureAvg - 100; //To reverse the value
-        delay(100); //Just hold on a sec...
+        a = moistureSampler();
+        Serial.println(a);
+        moistureAvg = (a / 1024.0) * 100.0;
+        //Serial.println(a);
+        //moistureAvg = a * 100;
+        Serial.println(moistureAvg);
+        //moistureAvg = (moistureAvg / 1024) * 100; // Calculate the percentage, for dear Bella *_*
+        //Serial.print(moistureAvg);
+        moistureAvg = 100 - moistureAvg; //To reverse the value
+        //Serial.print(moistureAvg);
+        delay(10); //Just hold on a sec...
         if(moistureAvg < 10) {
           Serial1.print("M10");
-          Serial1.print(moistureAvg);
+          Serial.print(moistureAvg);
           Serial1.println(":");
           Serial1.flush();
           Serial.print("M10");
-          Serial.print(moistureAvg);
+          Serial1.print(moistureAvg);
           Serial.println(":");
           Serial.flush();
+          moistureAvg = 0; // Reset the value after printing
         }
         else {
          Serial.print("M1");
@@ -401,11 +433,15 @@ void garden(String cmd) {
         }
      }
      if(cmd.equals("GSO")) {
+        float moistureAvg = 0.0;
         moistureAvg = moistureSampler();
-        moistureAvg = (moistureAvg / 1024) * 100; // Calculate the percentage, for dear Bella *_*
-        moistureAvg = 100 - moistureAvg; //To reverse the value
-        delay(100); //Just hold on a sec...
-        if(moistureAvg >= 80) {
+        Serial.println(moistureAvg);
+        moistureAvg = (moistureAvg / 1024.0) * 100.0; // Calculate the percentage, for dear Bella *_*
+        Serial.println(moistureAvg);
+        moistureAvg = 100.0 - moistureAvg; //To reverse the value
+        Serial.println(moistureAvg);
+        delay(10); //Just hold on a sec...
+        if(moistureAvg >= 90) {
           Serial.println("F3:");//Soil is too wet to be watered
           Serial.flush();
           Serial1.println("F3:");
@@ -417,8 +453,9 @@ void garden(String cmd) {
           Serial.flush();
           Serial1.println("T3:");
           Serial1.flush();
-          initPosition();
+         // initPosition();
         }
+        moistureAvg = 0; // Reset the value after printing
      }
      if(cmd.equals("GSF")) {
         fail();
@@ -426,8 +463,8 @@ void garden(String cmd) {
 }
 
 void startSprinkler() {
-  for(int i = 0; i < 10; i++) {
-    servo1.write(0);// For Position at 0 degrees
+  /*for(int i = 0; i < 3; i++) {
+   servo1.write(0);// For Position at 0 degrees
     digitalWrite(motor1En,HIGH);
     digitalWrite(motor1Pin1,HIGH);
     digitalWrite(motor1Pin2,LOW);
@@ -442,10 +479,18 @@ void startSprinkler() {
     digitalWrite(motor1Pin1,HIGH);
     digitalWrite(motor1Pin2,LOW);
     delay(500);
-  }
+  }*/
+  digitalWrite(motor1En, HIGH);
+  digitalWrite(motor1Pin1,HIGH);
+  digitalWrite(motor1Pin2,LOW);
+  //delay(5000);
+  
 }
 
 void fail() {
+  digitalWrite(motor1En, LOW);
+  digitalWrite(motor1Pin1,LOW);
+  digitalWrite(motor1Pin2,LOW);
   Serial.println("F7:");
   Serial.flush();
   Serial1.println("F7:");
@@ -490,11 +535,11 @@ void getStatus() {
 
   //Status of the kitchen
   checkContents(&c1, &c2);
-  if(c1 < 50) 
+  if(c2 < 50) 
     sat += "F";
   else
     sat += "T";
-  if(c2 < 50)
+  if(c1 < 50)
     sat += "F";
   else
     sat += "T";
@@ -519,9 +564,9 @@ void getStatus() {
 
 
 void checkContents(int *p1, int *p2) {
-          long d1,d2,d3,cm1,cm2,cm3;
-          int len = 100; //Length of Box. Assumed value for now. Update after boxes are obtained
-      
+          float d1,d2,d3,cm1,cm2,cm3;
+          int len = 16; //Length of Box. Assumed value for now. Update after boxes are obtained
+          float a=0.0;
           digitalWrite(tp1, LOW); //low pulse first to ensure a clean high pulse.
           delayMicroseconds(2); 
           digitalWrite(tp1, HIGH);
@@ -537,7 +582,8 @@ void checkContents(int *p1, int *p2) {
           // convert the time into a distance
           cm1 = microToCms(d1);
           //calculate percentage
-          *p1=(cm1/len)*100;
+          a=cm1/len;
+          *p1=a*100;
           //delay(100);
 
           digitalWrite(tp2, LOW); //low pulse first to ensure a clean high pulse.
@@ -556,6 +602,7 @@ void checkContents(int *p1, int *p2) {
     // convert the time into a distance
           cm2 = microToCms(d2);
           //calculate percentage
-          *p2=(cm2/len)*100;  
+          a=cm2/len;
+          *p2=a*100;
 }
 
