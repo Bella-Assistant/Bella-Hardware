@@ -391,9 +391,8 @@ void roomKitchen(String cmd) {
             Serial1.flush(); 
          }
          // Serial.println("C185TC234F:");
-}
-}
-
+     }
+  }
 
 void garden(String cmd) {
   float a;
