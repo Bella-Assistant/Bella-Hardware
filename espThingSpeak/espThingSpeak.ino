@@ -14,6 +14,7 @@ void setup() {
 }
 
 void loop() {
+  main();
   sendValues(value);
   delay(15000);
 }
@@ -57,3 +58,46 @@ void sendValues(int value[]) {
  client.stop();
 }
 
+int matrix[25][25], visited_cities[10], limit, cost = 0;
+ 
+int tsp(int c) {
+ int count, nearest_city = 999;
+ int minimum = 999, temp;
+ for(count = 0; count < limit; count++) {
+  if((matrix[c][count] != 0) && (visited_cities[count] == 0)) {
+    if(matrix[c][count] < minimum) {
+      minimum = matrix[count][0] + matrix[c][count];
+    }
+    temp = matrix[c][count];
+    nearest_city = count;
+  }
+ }
+ if(minimum != 999) {
+  cost = cost + temp;
+  }
+  return nearest_city;
+}
+ 
+void minimum_cost(int city) {
+ int nearest_city;
+ visited_cities[city] = 1;
+ Serial.println(city);
+ nearest_city = tsp(city);
+ if(nearest_city == 999) {
+  nearest_city = 0;
+  Serial.println(nearest_city);
+  cost = cost + matrix[city][nearest_city];
+  return;
+ }
+ minimum_cost(nearest_city);
+}
+ 
+int main() { 
+ // Doesn't do shit!
+ return 0;
+ Serial.println("Path");
+ minimum_cost(0);
+ Serial.println("Minimum Cost");
+ Serial.println(cost);
+ return 0;
+}
