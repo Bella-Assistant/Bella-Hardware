@@ -52,6 +52,7 @@ boolean cmdAvailable = false;
 boolean flag1 = false;
 boolean flag2 = false;
 boolean flag3 = false;
+boolean flag4 = false;
 
 
 // Define the pin for moisture sensor
@@ -414,11 +415,11 @@ void garden(String cmd) {
         delay(10); //Just hold on a sec...
         if(moistureAvg < 10) {
           Serial1.print("M10");
-          Serial.print(moistureAvg);
+          Serial1.print(moistureAvg);
           Serial1.println(":");
           Serial1.flush();
           Serial.print("M10");
-          Serial1.print(moistureAvg);
+          Serial.print(moistureAvg);
           Serial.println(":");
           Serial.flush();
           moistureAvg = 0; // Reset the value after printing
@@ -486,6 +487,7 @@ void startSprinkler() {
   digitalWrite(motor1En, HIGH);
   digitalWrite(motor1Pin1,HIGH);
   digitalWrite(motor1Pin2,LOW);
+  flag4 = true;
   //delay(5000);
   
 }
@@ -498,6 +500,7 @@ void fail() {
   Serial.flush();
   Serial1.println("F7:");
   Serial1.flush();
+  flag4 = false;
 }
 
 
@@ -538,11 +541,13 @@ void getStatus() {
 
   //Status of the kitchen
   checkContents(&c1, &c2);
-  if(c2 < 50) 
+  Serial.println(c1);
+  Serial.println(c2);
+  if(c1 < 50) 
     sat += "F";
   else
     sat += "T";
-  if(c1 < 50)
+  if(c2 < 50)
     sat += "F";
   else
     sat += "T";
@@ -586,7 +591,7 @@ void checkContents(int *p1, int *p2) {
           cm1 = microToCms(d1);
           //calculate percentage
           a=cm1/len;
-          *p1=a*100;
+          *p1=100 - a*100;
           //delay(100);
 
           digitalWrite(tp2, LOW); //low pulse first to ensure a clean high pulse.
@@ -606,7 +611,9 @@ void checkContents(int *p1, int *p2) {
           cm2 = microToCms(d2);
           //calculate percentage
           a=cm2/len;
-          *p2=a*100;
+          *p2=100 - a*100;
+          Serial.println(*p1);
+          Serial.println(*p2);
 }
 
 void turnOff() {
