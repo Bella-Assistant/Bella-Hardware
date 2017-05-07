@@ -134,6 +134,10 @@ void loop() {
     getStatus();
     cmdAvailable = false;
   }
+  if( cmd.equals("Z") ) {
+    turnOff();
+    cmdAvailable = false;
+  }
   }
 }// Void loop
 
@@ -603,5 +607,40 @@ void checkContents(int *p1, int *p2) {
           //calculate percentage
           a=cm2/len;
           *p2=a*100;
+}
+
+void turnOff() {
+  int c = 0;
+  if(flag1) {
+    digitalWrite(light1,1);
+    flag1 = false;
+    c += 1;
+  }
+  if(flag2) {
+    digitalWrite(light2,1);
+    flag2 = false;
+    c += 1;
+  }
+  if(flag3) {
+    digitalWrite(motor2En, LOW);
+    digitalWrite(motor2pin1, LOW);
+    digitalWrite(motor2pin2, LOW);
+    flag3 = false;
+    c += 1;
+  }
+  if (c > 0) {
+    Serial1.println("ZT:");
+    Serial1.flush();
+    Serial.println("ZT:");
+    Serial.flush();
+    cmdAvailable = false;
+  }
+  else {
+    Serial1.println("ZF:");
+    Serial1.flush();
+    Serial.println("ZT:");
+    Serial.flush();
+    cmdAvailable = false;
+  }
 }
 
