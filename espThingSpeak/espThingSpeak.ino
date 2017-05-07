@@ -5,7 +5,7 @@ String apiKey ="Q8KUPY2CZRYGFMQ6";
 const char* MY_SSID = "Akash"; 
 const char* MY_PWD = "astr1x2096";
 
-int value[8] = {45,60,22,55,81,75,12,54};
+int value[7] = {45,82,76,55,81,54,12};
 int sent = 0;
 
 void setup() {
@@ -39,10 +39,12 @@ void sendValues(int value[]) {
   Serial.println("Wifi Client Connected");
 
    String postStr = apiKey;
-   for(int i = 0; i < 8; i++) {
+   for(int i = 0; i < 7; i++) {
     postStr += "&field"+String(i+1)+"=";
     postStr += String(value[i]);
    }
+   postStr += "&field8=";
+   postStr += "S235";
    client.print("POST /update HTTP/1.1\n");
    client.print("Host: api.thingspeak.com\n");
    client.print("Connection: close\n");
@@ -52,7 +54,7 @@ void sendValues(int value[]) {
    client.print(postStr.length());
    client.print("\n\n");
    client.print(postStr);
-   delay(1000);
+   delay(15000);
  }
  sent++;
  client.stop();
